@@ -14,7 +14,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class ManagerTaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'task_name', 'start_date', 'end_date', 'assign', 'project']
 
-@admin.register(EmployeeTask)cd
+@admin.register(EmployeeTask)
 class EmployeeTaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'task_start_date', 'task_end_date', 'user', 'manager_task']
 
