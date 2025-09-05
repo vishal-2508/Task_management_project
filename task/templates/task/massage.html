@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Massage</title>
+</head>
+<body>
+    <h2>massage page</h2>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="massage">Massage : </label>
+        <input type="text" id='massage' name='massage' required> <br><br>
+        <button type="submit">Send</button><br><br>
+    </form>   
+
+    {% if massage_object.employee_task.user.username == username%}
+        <a href="{% url 'dashboard_page' %}">Go Back</a>
+    {% else %}
+        <a href="{% url 'manager_task' massage_object.employee_task.manager_task.project.id %}">Go Back</a>
+    {% endif %}
+    
+    <b><hr></b>
+    {% if massage_object.massage_detail %}
+        {% if user_type == 'Manager' %}
+            <h3><p style="text-align: center;">Manager</p>
+            <p style="text-align: left;">Employee</p></h3>
+        {% else %}
+            <h3><p style="text-align: center;">Employee</p>
+            <p style="text-align: left;">Manager</p></h3>
+        {% endif %}
+        {% for item in massage_object.massage_detail reversed %}
+            {% if item.username == username %}
+                <b><p style="text-align: center;">{{item.massage}}</p></b>
+            {% else %}
+                <b><p style="text-align: left;">{{item.massage}}</p></b>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h4>No Massage</h4>
+    {% endif %}
+
+</body>
+</html>

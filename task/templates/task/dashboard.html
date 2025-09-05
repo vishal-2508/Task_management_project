@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+    table, th, td {
+        border: 3px solid black;
+        border-collapse: collapse;
+        padding: 6px;
+    }
+</style>
+</head>
+<body>
+    <h2>Dashboard page</h2>
+    <h3><p style="color: red;">Hi {{name}}</p></h3>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <div style="text-align: right;">
+        <h2>
+        <form action="{% url 'logout_page' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form> <br>
+
+        <b>Attendance : </b>
+        {% if action_str == 'start' %}
+            <a href="{% url 'attendance_action' 'start'%}">Start</a>
+        {% else %}
+            <a href="{% url 'attendance_action' 'end' %}">End</a>
+        {% endif %}
+        </h2>
+    </div>
+
+    <!-- This condition exiqute when user type is Employee -->
+    {% if user_type == 'Employee' %}
+        <br><br><h3>User All Task</h3>
+        {% if employee_task_details %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Task Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Task Start Date</th>
+                        <th>Task End Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th>Task Chat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in employee_task_details %}
+                    <tr>
+                        <td>{{ item.manager_task.project.project_name }}</td>
+                        <td>{{ item.manager_task.task_name }}</td>
+                        <td>{{ item.manager_task.start_date }}</td>
+                        <td>{{ item.manager_task.end_date }}</td>
+                        <td>{{ item.task_start_date }}</td>
+                        <td>{{ item.task_end_date }}</td>
+                        <td>
+                            {% if item.task_end_date %}
+                                <h4>Success</h4>
+                            {% elif item.task_start_date %}
+                                <h4>Process</h4>
+                            {% elif current_date < item.manager_task.start_date %}
+                                <h4>Up Comming</h4>
+                            {% else %}
+                                <h4>Pending</h4>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.task_start_date == None or item.task_end_date %}
+                            <b><a href="{% url 'employee_task_action' item.id "start" %}">Start</a></b>
+                            {% else %}
+                            <b><a href="{% url 'employee_task_action' item.id "end" %}">End</a></b>
+                            {% endif %}
+                        </td>
+                        <td><a href="{% url 'massage_page' item.id %}">Click</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h3>No record of the task</h3>
+        {% endif %}
+
+    <!-- This condition exiqute when user type is Manager -->
+    {% else %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            <label for="project">Create Project : </label>
+            <input type="text" id='project' name='project_name' required> <br><br>
+            <button type="submit">Save</button><br><br>
+        </form>
+
+        <br><br><h3>Project Collection</h3>
+        <hr>
+        {% if project_details %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>View</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for items in project_details %}
+                    <tr>
+                        <td>{{ items.project_name }}</td>
+                        <td><a href="{% url 'manager_task' items.id %}">Click</a></td>
+                        <td><a href="{% url 'delete_project' items.id %}">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h3>No Project Record</h3>
+        {% endif %}
+
+    {% endif %}
+</body>
+</html> 
+

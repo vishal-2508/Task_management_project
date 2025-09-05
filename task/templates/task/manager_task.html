@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Task</title>
+    <style>
+    table, th, td {
+        border: 3px solid black;
+        border-collapse: collapse;
+        padding: 6px;
+    }
+</style>
+</head>
+<body>
+    <h2>Manager Task page</h2>
+    <h3><p style="color: green;">Project Name : {{project_name}}</p></h3>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% comment %}
+        This html form use for add task.
+    {% endcomment %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="task">Task Name : </label>
+        <input type="text" id='task' name='task_name' required> <br><br>
+        <label for="start_date">Start Date : </label>
+        <input type="date" id='start_date' name='start_date' required> <br><br>
+        <label for="end_date">End Date : </label>
+        <input type="date" id='end_date' name='end_date' required> <br><br>
+        <label for="assign">Assign To : </label>
+        <input type="text" id='assign' name='assign' required> <br><br>
+        <input type="hidden" id="operation" name="operation" value="add task">
+        <button type="submit">Add Task</button><br><br>
+    </form><br>
+
+    {% comment %}
+        This html form use for display employee activity. 
+    {% endcomment %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="employee">Employee activity : </label>
+        <input type="text" id='employee' name='employee_username' required> <br><br>
+        <input type="hidden" id="operation" name="operation" value="employee activity">
+        <button type="submit">Search</button><br><br>
+    </form>
+    {% if Go_dashboard %}
+    <a href="{% url 'dashboard_page' %}">Go Back</a>
+    {% else %}
+    <a href="{% url 'manager_task' project_id %}">Go Back</a>
+    {% endif %}
+
+    <br><br><h3>All Task</h3>
+    {% if employee_task_details %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Assign</th>
+                    <th>Task Start Date</th>
+                    <th>Task End Date</th>
+                    <th>Status</th>
+                    <th>Delete</th>
+                    <th>Massage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in employee_task_details %}
+                <tr>
+                    <td>{{ item.manager_task.task_name }}</td>
+                    <td>{{ item.manager_task.start_date }}</td>
+                    <td>{{ item.manager_task.end_date }}</td>
+                    <td>{{ item.manager_task.assign }}</td>
+                    <td>{{ item.task_start_date }}</td>
+                    <td>{{ item.task_end_date }}</td>
+                    <td>
+                        {% if item.task_end_date %}
+                            <h4>Success</h4>
+                        {% else %}
+                            <h4>Pending</h4>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'delete_manager_task' item.manager_task.id %}">delete</a></td>
+                    <td>
+                        <a href="{% url 'massage_page' item.id %}">Click</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h3>No record of the task</h3>
+    {% endif %}
+</body>
+</html> 
